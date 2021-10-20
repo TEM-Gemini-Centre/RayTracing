@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='RayTracing',
     version='0.0.1',
-    license=license,
+    license='MIT',
     author='Emil Christiansen',
     author_email='emil.christiansen@ntnu.no',
     description="Interactive geometrical raytracing package",
@@ -21,6 +21,9 @@ setup(
         "numpy",
         "scipy",
         "matplotlib",
+        "PyQt5",
+        "pathlib",
+        "tabulate"
     ],
     package_data={
         "": ["LICENSE", "README.md"],

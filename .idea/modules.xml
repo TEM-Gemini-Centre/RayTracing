@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/WaveOptics.iml" filepath="$PROJECT_DIR$/.idea/WaveOptics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/RayTracing.iml" filepath="$PROJECT_DIR$/.idea/RayTracing.iml" />
     </modules>
   </component>
 </project>

@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='WaveOptics',
+    name='RayTracing',
     version='0.0.1',
     license=license,
     author='Emil Christiansen',
     author_email='emil.christiansen@ntnu.no',
-    description="Wave optical illustraon/simulation package",
+    description="Interactive geometrical raytracing package",
     long_description=open('README.md').read(),
     classifiers=[
         "Programming Language :: Python :: 3.8",

@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>368</width>
+    <height>719</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="11" column="1">
+     <widget class="QPushButton" name="PLButton">
+      <property name="text">
+       <string>PL</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="2">
+     <widget class="QDoubleSpinBox" name="ILA1ZSpinbox"/>
+    </item>
+    <item row="3" column="2">
+     <widget class="QDoubleSpinBox" name="CL3ZSpinbox"/>
+    </item>
+    <item row="14" column="1">
+     <widget class="QPushButton" name="CLA1Button">
+      <property name="text">
+       <string>CLA1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="OLPreLabel">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4">
+     <widget class="QDoubleSpinBox" name="CL2ValueSpinbox"/>
+    </item>
+    <item row="6" column="1">
+     <widget class="QPushButton" name="OLPostButton">
+      <property name="text">
+       <string>OLPost</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="2">
+     <widget class="QDoubleSpinBox" name="PLAZSpinbox"/>
+    </item>
+    <item row="4" column="4">
+     <widget class="QDoubleSpinBox" name="CMValueSpinbox"/>
+    </item>
+    <item row="14" column="3">
+     <widget class="QDoubleSpinBox" name="CLA1OffsetSpinbox"/>
+    </item>
+    <item row="10" column="2">
+     <widget class="QDoubleSpinBox" name="IL3ZSpinbox"/>
+    </item>
+    <item row="7" column="3">
+     <widget class="QDoubleSpinBox" name="OMOffsetSpinbox"/>
+    </item>
+    <item row="1" column="3">
+     <widget class="QDoubleSpinBox" name="CL1OffsetSpinbox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="2">
+     <widget class="QDoubleSpinBox" name="IL2ZSpinbox"/>
+    </item>
+    <item row="7" column="4">
+     <widget class="QDoubleSpinBox" name="OMValueSpinbox"/>
+    </item>
+    <item row="11" column="3">
+     <widget class="QDoubleSpinBox" name="PLOffsetSpinbox"/>
+    </item>
+    <item row="17" column="0">
+     <widget class="QLabel" name="ILA2Label">
+      <property name="text">
+       <string>Deflector</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QPushButton" name="OLPreButton">
+      <property name="text">
+       <string>OLPre</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="IL2Label">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="3">
+     <widget class="QDoubleSpinBox" name="IL2OffsetSpinbox"/>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Z</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="3">
+     <widget class="QDoubleSpinBox" name="PLAOffsetSpinbox"/>
+    </item>
+    <item row="12" column="0">
+     <widget class="QLabel" name="GUN1Label">
+      <property name="text">
+       <string>Deflector</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="OMLabel">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="3">
+     <widget class="QDoubleSpinBox" name="ILA2OffsetSpinbox"/>
+    </item>
+    <item row="3" column="4">
+     <widget class="QDoubleSpinBox" name="CL3ValueSpinbox"/>
+    </item>
+    <item row="11" column="2">
+     <widget class="QDoubleSpinBox" name="PLZSpinbox"/>
+    </item>
+    <item row="8" column="3">
+     <widget class="QDoubleSpinBox" name="IL1OffsetSpinbox"/>
+    </item>
+    <item row="16" column="0">
+     <widget class="QLabel" name="ILA1Label">
+      <property name="text">
+       <string>Deflector</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="3">
+     <widget class="QDoubleSpinBox" name="OLPostOffsetSpinbox"/>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Name</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="4">
+     <widget class="QDoubleSpinBox" name="CLA1ValueSpinbox"/>
+    </item>
+    <item row="4" column="3">
+     <widget class="QDoubleSpinBox" name="CMOffsetSpinbox"/>
+    </item>
+    <item row="12" column="4">
+     <widget class="QDoubleSpinBox" name="GUN1ValueSpinbox"/>
+    </item>
+    <item row="6" column="2">
+     <widget class="QDoubleSpinBox" name="OLPostZSpinbox"/>
+    </item>
+    <item row="10" column="1">
+     <widget class="QPushButton" name="IL3Button">
+      <property name="text">
+       <string>IL3</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="CL1Label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="1">
+     <widget class="QPushButton" name="ILA2Button">
+      <property name="text">
+       <string>ILA2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="IL1Label">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="3">
+     <widget class="QDoubleSpinBox" name="GUN2OffsetSpinbox"/>
+    </item>
+    <item row="15" column="0">
+     <widget class="QLabel" name="CLA2Label">
+      <property name="text">
+       <string>Deflector</string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="2">
+     <widget class="QDoubleSpinBox" name="ILA2ZSpinbox"/>
+    </item>
+    <item row="1" column="2">
+     <widget class="QDoubleSpinBox" name="CL1ZSpinbox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="3">
+     <widget class="QDoubleSpinBox" name="IL3OffsetSpinbox"/>
+    </item>
+    <item row="13" column="0">
+     <widget class="QLabel" name="GUN2Label">
+      <property name="text">
+       <string>Deflector</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="IL3Label">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="4">
+     <widget class="QDoubleSpinBox" name="OLPreValueSpinbox"/>
+    </item>
+    <item row="1" column="4">
+     <widget class="QDoubleSpinBox" name="CL1ValueSpinbox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="3">
+     <widget class="QDoubleSpinBox" name="GUN1OffsetSpinbox"/>
+    </item>
+    <item row="7" column="2">
+     <widget class="QDoubleSpinBox" name="OMZSpinbox"/>
+    </item>
+    <item row="8" column="4">
+     <widget class="QDoubleSpinBox" name="IL1ValueSpinbox"/>
+    </item>
+    <item row="12" column="1">
+     <widget class="QPushButton" name="GUN1Button">
+      <property name="text">
+       <string>GUN1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Value</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QDoubleSpinBox" name="CL2ZSpinbox"/>
+    </item>
+    <item row="15" column="3">
+     <widget class="QDoubleSpinBox" name="CLA2OffsetSpinbox"/>
+    </item>
+    <item row="18" column="1">
+     <widget class="QPushButton" name="PLAButton">
+      <property name="text">
+       <string>PLA</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="1">
+     <widget class="QPushButton" name="ILA1Button">
+      <property name="text">
+       <string>ILA1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="4">
+     <widget class="QDoubleSpinBox" name="GUN2ValueSpinbox"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="CL3Label">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QDoubleSpinBox" name="CMZSpinbox"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="CL1Button">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>CL1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="0">
+     <widget class="QLabel" name="PLALabel">
+      <property name="text">
+       <string>Deflector</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="4">
+     <widget class="QDoubleSpinBox" name="IL3ValueSpinbox"/>
+    </item>
+    <item row="3" column="3">
+     <widget class="QDoubleSpinBox" name="CL3OffsetSpinbox"/>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="CL2Button">
+      <property name="text">
+       <string>CL2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QPushButton" name="CL3Button">
+      <property name="text">
+       <string>CL3</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="4">
+     <widget class="QDoubleSpinBox" name="PLValueSpinbox"/>
+    </item>
+    <item row="12" column="2">
+     <widget class="QDoubleSpinBox" name="GUN1ZSpinbox"/>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="CMLabel">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="0">
+     <widget class="QLabel" name="CLA1Label">
+      <property name="text">
+       <string>Deflector</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="OLPostLabel">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="2">
+     <widget class="QDoubleSpinBox" name="CLA1ZSpinbox"/>
+    </item>
+    <item row="13" column="2">
+     <widget class="QDoubleSpinBox" name="GUN2ZSpinbox"/>
+    </item>
+    <item row="0" column="3">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Offset</string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="4">
+     <widget class="QDoubleSpinBox" name="ILA2ValueSpinbox"/>
+    </item>
+    <item row="5" column="3">
+     <widget class="QDoubleSpinBox" name="OLPreOffsetSpinbox"/>
+    </item>
+    <item row="15" column="1">
+     <widget class="QPushButton" name="CLA2Button">
+      <property name="text">
+       <string>CLA2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QPushButton" name="OMButton">
+      <property name="text">
+       <string>OM</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="0">
+     <widget class="QLabel" name="PLLabel">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="4">
+     <widget class="QDoubleSpinBox" name="OLPostValueSpinbox"/>
+    </item>
+    <item row="15" column="2">
+     <widget class="QDoubleSpinBox" name="CLA2ZSpinbox"/>
+    </item>
+    <item row="16" column="4">
+     <widget class="QDoubleSpinBox" name="ILA1ValueSpinbox"/>
+    </item>
+    <item row="2" column="3">
+     <widget class="QDoubleSpinBox" name="CL2OffsetSpinbox"/>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="CMButton">
+      <property name="text">
+       <string>CM</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="3">
+     <widget class="QDoubleSpinBox" name="ILA1OffsetSpinbox"/>
+    </item>
+    <item row="8" column="1">
+     <widget class="QPushButton" name="IL1Button">
+      <property name="text">
+       <string>IL1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="4">
+     <widget class="QDoubleSpinBox" name="CLA2ValueSpinbox"/>
+    </item>
+    <item row="9" column="4">
+     <widget class="QDoubleSpinBox" name="IL2ValueSpinbox"/>
+    </item>
+    <item row="18" column="4">
+     <widget class="QDoubleSpinBox" name="PLAValueSpinbox"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="CL2Label">
+      <property name="text">
+       <string>Lens</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="1">
+     <widget class="QPushButton" name="GUN2Button">
+      <property name="text">
+       <string>GUN2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QDoubleSpinBox" name="OLPreZSpinbox"/>
+    </item>
+    <item row="9" column="1">
+     <widget class="QPushButton" name="IL2Button">
+      <property name="text">
+       <string>IL2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="2">
+     <widget class="QDoubleSpinBox" name="IL1ZSpinbox"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>368</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

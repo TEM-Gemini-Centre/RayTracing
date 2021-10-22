@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8620428-e4f2-4084-8044-5dd5fbb25150" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/RayTracing.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/WaveOptics.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/other.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RayTracing/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/RayTracing/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RayTracing/gui/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/RayTracing/gui/gui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -209,7 +202,7 @@
       <workItem from="1634280833785" duration="8683000" />
       <workItem from="1634564106386" duration="7803000" />
       <workItem from="1634710216110" duration="298000" />
-      <workItem from="1634710532074" duration="294000" />
+      <workItem from="1634710532074" duration="4447000" />
     </task>
     <servers />
   </component>
@@ -221,10 +214,12 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="574" y="128" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824@0.0.1536.824" timestamp="1634582283211" />
-    <state x="549" y="167" key="FileChooserDialogImpl" timestamp="1632117919949">
-      <screen x="0" y="0" width="1536" height="824" />
+    <state x="-1219" y="371" key="FileChooserDialogImpl" timestamp="1634883521702">
+      <screen x="-1920" y="-126" width="1920" height="1160" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824/-1920.-121.1920.1160@0.0.1536.824" timestamp="1632117919949" />
+    <state x="-1234" y="109" key="FileChooserDialogImpl/0.0.1536.824/-1920.-126.1920.1160@-1920.-126.1920.1160" timestamp="1634809915152" />
+    <state x="-1219" y="371" key="FileChooserDialogImpl/0.0.1536.824/-1920.-126.1920.1160@0.0.1536.824" timestamp="1634883521702" />
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1629215008123" />
     <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1631211322245">
       <screen x="0" y="0" width="1536" height="824" />

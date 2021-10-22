@@ -9,6 +9,9 @@ from matplotlib.colors import to_hex, to_rgb
 import sys
 import time
 
+import argparse
+
+
 
 class Error(Exception):
     pass
@@ -347,7 +350,6 @@ class OpticalOperatorController(QtCore.QObject):
         self._model.styleChanged[dict].emit(styles)
 
 
-
 class StyleWidget(QtWidgets.QWidget):
     styleChanged = pyqtSignal([dict])
 
@@ -357,7 +359,8 @@ class StyleWidget(QtWidgets.QWidget):
 
     @property
     def widgets(self):
-        return {'style': self._linestyleCombobox, 'width': self._linewidthSpinbox, 'alpha': self._aSpinbox, 'color': self._colorWidget}
+        return {'style': self._linestyleCombobox, 'width': self._linewidthSpinbox, 'alpha': self._aSpinbox,
+                'color': self._colorWidget}
 
     def __init__(self, *args, **kwargs):
         super(StyleWidget, self).__init__(*args, **kwargs)
@@ -611,7 +614,7 @@ class OpticalOperatorView(QtWidgets.QWidget):
         self.setupValueSpinbox()
         self.setupOffsetSpinbox()
         self.setupValueIndicator()
-        self.styleWidget.setStyles(self._model.style) #Simple setup for the stylewidgets
+        self.styleWidget.setStyles(self._model.style)  # Simple setup for the stylewidgets
 
         # Listeners
         self._model.valueChanged[float].connect(self.on_value_changed)
@@ -693,7 +696,6 @@ class OpticalOperatorView(QtWidgets.QWidget):
     def setupValueIndicator(self):
         self.valueIndicator.setText(f'{self._model.value}')
 
-
     @pyqtSlot(float)
     def on_z_changed(self, value):
         if self.zSpinbox.minimum() > value:
@@ -761,6 +763,7 @@ class OpticalOperatorView(QtWidgets.QWidget):
         self.styleWidget.setStyles(style)
         self.styleWidget.blockSignals(False)
         self.on_model_changed()
+
 
 class MicroscopeModel(QtCore.QObject):
     modelChanged = pyqtSignal([], name='modelChanged')
@@ -871,8 +874,8 @@ class MicroscopeController(QtCore.QObject):
 
 
 class MicroscopeView(QtWidgets.QMainWindow):
-    #colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
-    #colors = plt.get_cmap('inferno', 10)
+    # colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    # colors = plt.get_cmap('inferno', 10)
     colors = plt.get_cmap('tab20', 10)
 
     @property
@@ -917,7 +920,6 @@ class MicroscopeView(QtWidgets.QMainWindow):
         self.centralWidget().layout().addWidget(self.print_system_button, 2, 0)
         self.centralWidget().layout().addWidget(self.print_traces_button, 3, 0)
 
-
         self.lensStyleWindow = QtWidgets.QMainWindow(self)
         self.lensStyleWindow.setCentralWidget(QtWidgets.QWidget(self))
         self.lensStyleWindow.centralWidget().setLayout(QtWidgets.QGridLayout())
@@ -925,15 +927,16 @@ class MicroscopeView(QtWidgets.QMainWindow):
         self.lensStyleWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Style'), 0, 1)
         self.lensStyleWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Width'), 0, 2)
         self.lensStyleWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Color'), 0, 4)
-        [self.lensStyleWindow.centralWidget().layout().addWidget(QtWidgets.QLabel(f'{view.nameLabel.text()}'), i + 1, 0) for
+        [self.lensStyleWindow.centralWidget().layout().addWidget(QtWidgets.QLabel(f'{view.nameLabel.text()}'), i + 1, 0)
+         for
          i, view in enumerate(self.operatorViews) if view.model.is_lens]
-        [self.lensStyleWindow.centralWidget().layout().addWidget(view.styleWidget.widgets['style'], i+1, 1) for
+        [self.lensStyleWindow.centralWidget().layout().addWidget(view.styleWidget.widgets['style'], i + 1, 1) for
          i, view in enumerate(self.operatorViews) if view.model.is_lens]
         [self.lensStyleWindow.centralWidget().layout().addWidget(view.styleWidget.widgets['width'], i + 1, 2) for
          i, view in enumerate(self.operatorViews) if view.model.is_lens]
         [self.lensStyleWindow.centralWidget().layout().addWidget(view.styleWidget.widgets['color'], i + 1, 4) for
          i, view in enumerate(self.operatorViews) if view.model.is_lens]
-        #[v for view in self.operatorViews]
+        # [v for view in self.operatorViews]
         menubar = self.menuBar()
         self.controlMenu = menubar.addMenu('Controls')
         self.operatorAction = QtWidgets.QAction('&Operators', self)
@@ -954,7 +957,6 @@ class MicroscopeView(QtWidgets.QMainWindow):
 
         self.lensStyleAction.triggered.connect(self.openLensStyle)
 
-
         # Signals
         self.plot_button.clicked.connect(self.on_model_changed)
         self.print_system_button.clicked.connect(self._model.printSystem)
@@ -969,7 +971,7 @@ class MicroscopeView(QtWidgets.QMainWindow):
 
         # show lenses
         [operator_view.on_model_changed(annotate=False) for operator_view in self._operatorViews]
-        #Run raytracing and update the plot fo an initial inspection
+        # Run raytracing and update the plot fo an initial inspection
         self.on_model_changed()
 
     def setup_lens_widgets(self):
@@ -998,8 +1000,8 @@ class MicroscopeView(QtWidgets.QMainWindow):
             if trace[0].x in colors:
                 pass
             else:
-                #colors[trace[0].x] = self.colors[len(colors)]
-                colors[trace[0].x] = self.colors(len(colors)/len(traces))
+                # colors[trace[0].x] = self.colors[len(colors)]
+                colors[trace[0].x] = self.colors(len(colors) / len(traces))
         self._trace_lines = [trace.show(ax=self.plot_widget.canvas.ax, annotate=False, color=colors[trace[0].x])[2] for
                              i, trace in enumerate(traces)]
         xs = [[ray.x for ray in raytrace] for raytrace in traces]
@@ -1035,56 +1037,10 @@ class MicroscopeView(QtWidgets.QMainWindow):
         self.lensStyleWindow.show()
 
 
-def main():
-    mygui = QtWidgets.QApplication(sys.argv)
-    mainwindow = QtWidgets.QMainWindow()
-    mainwindow.setCentralWidget(QtWidgets.QWidget())
-    mainwindow.centralWidget().setLayout(QtWidgets.QGridLayout())
-
-    CL1 = Lens(10, label='CL1', z=100)
-    CL2 = Lens(10, label='CL2', z=70)
-
-    CL1model = OpticalOperatorModel(CL1, mainwindow)
-    CL2model = OpticalOperatorModel(CL2, mainwindow)
-
-    CL1controller = OpticalOperatorController(CL1model, CL1model.parent())
-    CL2controller = OpticalOperatorController(CL2model, CL2model.parent())
-
-    [CL1controller.setValuePreset((i + 1), float(i + 1) ** 2) for i in range(5)]
-
-    CL1view = OpticalOperatorView(CL1model, CL1controller, CL1model.parent())
-    CL2view = OpticalOperatorView(CL2model, CL2controller, CL2model.parent())
-
-    mainwindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Type'), 0, 0)
-    mainwindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Name'), 0, 1)
-    mainwindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Z'), 0, 2)
-    mainwindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Offset'), 0, 3)
-    mainwindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Value'), 0, 4)
-    mainwindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Value (2)'), 0, 5)
-
-    for i, view in enumerate([CL1view, CL2view]):
-        mainwindow.centralWidget().layout().addWidget(view.typeLabel, i + 1, 0)
-        mainwindow.centralWidget().layout().addWidget(view.nameLabel, i + 1, 1)
-        mainwindow.centralWidget().layout().addWidget(view.zSpinbox, i + 1, 2)
-        mainwindow.centralWidget().layout().addWidget(view.offsetSpinbox, i + 1, 3)
-        mainwindow.centralWidget().layout().addWidget(view.valueSpinbox, i + 1, 4)
-
-        w = QtWidgets.QWidget(mainwindow.centralWidget())
-        w.setLayout(QtWidgets.QVBoxLayout())
-        w.layout().addWidget(view.valueDial)
-        view.valueIndicator.setAlignment(QtCore.Qt.AlignCenter)
-        w.layout().addWidget(view.valueIndicator)
-        mainwindow.centralWidget().layout().addWidget(w, i + 1, 5)
-
-    mainwindow.show()
-
-    sys.exit(mygui.exec_())
-
-
-def main2():
+def full_column(angles=(-1, 0, 1), size=0, n_points=1):
     mygui = QtWidgets.QApplication(sys.argv)
 
-    source = Source(150, [-1, 1], size=1)
+    source = Source(150, angles, size=size, points=n_points)
     screen = Screen(-100)
     GUN1 = Deflector(0, label='GUN1', z=95)
     GUN2 = Deflector(0, label='GUN2', z=85)
@@ -1113,10 +1069,11 @@ def main2():
     microscope_view.show()
     sys.exit(mygui.exec_())
 
-def main3():
+
+def condenser_system(angles=(-1, 0, 1), size=0, n_points=1):
     mygui = QtWidgets.QApplication(sys.argv)
 
-    source = Source(100, np.linspace(-1, 1, num=3), size=0.1, points=9)
+    source = Source(100, angles, size=size, points=n_points)
     screen = Screen(0)
     CL1 = Lens(6.3, label='CL1', z=82)
     CL3 = Lens(8, label='CL3', z=60)
@@ -1132,5 +1089,24 @@ def main3():
     microscope_view.show()
     sys.exit(mygui.exec_())
 
+
 if __name__ == '__main__':
-    main3()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--system', type=str, default='full', choices=['full', 'condenser','imaging'], help='The system to show, i.e. the condenser, imaging, or full system.')
+    parser.add_argument('--min_angle', dest='min_angle', type=float, default=-1, help='The minimum angle to emit from the source')
+    parser.add_argument('--max_angle', dest='max_angle', type=float, default=1, help='The maximum angle to emit from the source')
+    parser.add_argument('--n_angles', dest='n_angles', type=int, default=3, help='The number of angles to emit from the source')
+    parser.add_argument('--source_size', dest='source_size', type=float, default=0.0, help='The size of the source')
+    parser.add_argument('--source_points', dest='source_points', type=int, default=1, help='The number of points to emit beams from the source')
+
+    arguments = parser.parse_args()
+
+    angles = np.linspace(arguments.min_angle, arguments.max_angle, num=arguments.n_angles)
+    if arguments.system == 'full':
+        full_column(angles, size=arguments.source_size, n_points=arguments.source_points)
+    elif arguments.system == 'condenser':
+        condenser_system(angles, size=arguments.source_size, n_points=arguments.source_points)
+    elif arguments.system == 'imaging':
+        raise NotImplementedError(f'System {arguments.system} is not supported yet.')
+    else:
+        raise ValueError(f'System {arguments.system} not recognized')

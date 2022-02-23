@@ -12,12 +12,19 @@ import time
 import argparse
 
 
-
 class Error(Exception):
     pass
 
 
 class OperatorModelError(Error):
+    pass
+
+
+class SourceModelError(Error):
+    pass
+
+
+class ScreenModelError(Error):
     pass
 
 
@@ -765,6 +772,645 @@ class OpticalOperatorView(QtWidgets.QWidget):
         self.on_model_changed()
 
 
+class SourceModel(QtCore.QObject):
+    """
+        Model for controlling a Source
+
+        The model should ensure that proper signals are sent whenever the data of the Source has been changed.
+
+        The model emits the following signals:
+        :param zChanged: Signal ([], [float]) emitted whenever the z-value of the Source has changed.
+        :param offsetChanged: Signal ([], [float]) emitted whenever the offset-value of the Source has changed.
+        :param sizeChanged: Signal ([], [float]) emitted whenever the size-value of the Source has changed.
+        :param anglesChanged: Signal ([]) emitted whenever the angles of the Source has changed.
+        :param pointsChanged: Signal ([], [int]) emitted whenever the points-value of the Source has changed.
+        :param sourceChanged: Signal wmitted whenever any change has been made to the Source, inculding the above.
+        """
+    zChanged = pyqtSignal([], [float], name='zChanged')
+    offsetChanged = pyqtSignal([], [float], name='offsetChanged')
+    sizeChanged = pyqtSignal([], [float], name='sizeChanged')
+    anglesChanged = pyqtSignal([], [np.ndarray], name='anglesChanged')
+    pointsChanged = pyqtSignal([], [int], name='pointsChanged')
+    sourceChanged = pyqtSignal(name='operatorChanged')
+
+    @property
+    def z(self):
+        return self._source.z
+
+    @z.setter
+    def z(self, value):
+        if isinstance(value, float):
+            self._source.z = value
+            self.zChanged.emit()
+            self.zChanged[float].emit(value)
+            self.sourceChanged.emit()
+        else:
+            raise SourceModelError(
+                f'Cannot set Z-value of {self.__class__.__name__} of {self._source!r}.') from TypeError(
+                f'Value {value!r} must be `float`')
+
+    @property
+    def offset(self):
+        return self._source.offset
+
+    @offset.setter
+    def offset(self, value):
+        if isinstance(value, float):
+            self._source.offset = value
+            self.offsetChanged.emit()
+            self.offsetChanged[float].emit(value)
+            self.sourceChanged.emit()
+        else:
+            raise SourceModelError(
+                f'Cannot set offset-value of {self.__class__.__name__} of {self._source!r}.') from TypeError(
+                f'Value {value!r} must be `float`')
+
+    @property
+    def angles(self):
+        return self._source.angles
+
+    @angles.setter
+    def angles(self, value):
+        if isinstance(value, (list, tuple, np.ndarray)):
+            if len(np.shape(value)) == 1:
+                self._source.angles = np.array(value)
+                self.anglesChanged.emit()
+                self.angelesChanged[np.ndarray].emit(np.array(value))
+                self.operatorChanged.emit()
+            else:
+                raise SourceModelError(
+                    f'Cannot set angles of {self.__class__.__name__} of {self._source!r}.') from ValueError(
+                    f'Argument {value!r} has invalid shape {np.shape(value)} != (1,).')
+        else:
+            raise SourceModelError(
+                f'Cannot set angles of {self.__class__.__name__} of {self._source!r}.') from TypeError(
+                f'Value {value!r} must be `tuple`, `list`, or `np.ndarray`.')
+
+    @property
+    def size(self):
+        return self._source.size
+
+    @size.setter
+    def size(self, value):
+        if isinstance(value, float):
+            self._source.size = value
+            self.sizeChanged.emit()
+            self.sizeChanged[float].emit(value)
+            self.sourceChanged.emit()
+        else:
+            raise SourceModelError(
+                f'Cannot set size-value of {self.__class__.__name__} of {self._source!r}.') from TypeError(
+                f'Value {value!r} must be `float`')
+
+    @property
+    def points(self):
+        return self._source.points
+
+    @points.setter
+    def points(self, value):
+        if isinstance(value, int):
+            self._source.points = value
+            self.pointsChanged.emit()
+            self.pointsChanged[int].emit(value)
+            self.sourceChanged.emit()
+        else:
+            raise SourceModelError(
+                f'Cannot set points-value of {self.__class__.__name__} of {self._source!r}.') from TypeError(
+                f'Value {value!r} must be `int`')
+
+    @property
+    def silent(self):
+        return self._silent
+
+    @silent.setter
+    def silent(self, value):
+        self._silent = bool(value)
+        self.blockSignals(self._silent)
+
+    def __init__(self, source, *args, **kwargs):
+        """
+        Create a model for a Source
+
+        :param source: The Source to model
+        :param args: Optional positional arguments passed to QtCore.QObject constructor
+        :param kwargs: Optional keyword arguments passed to QtCore.QObject constructor
+        :type source: Source
+        """
+        super(SourceModel, self).__init__(*args, **kwargs)
+
+        if not isinstance(source, Source):
+            raise TypeError(
+                f'Cannot create {self.__class__.__name__} for {source!r}. Invalid type {type(source)}. Accepted types are OpticalOperator and subclasses.')
+        self._source = source
+        self._silent = False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self._source!r}, {self.parent()})'
+
+    def __str__(self):
+        return f'{self._source}'
+
+
+class SourceController(QtCore.QObject):
+    """
+    Controller for controlling a SourceModel
+    """
+
+    @property
+    def model(self):
+        return self._model
+
+    def __init__(self, model, *args, **kwargs):
+        """
+        Create a controller for a SourceModel
+
+        :param model: The model to control
+        :param args: Optional positional arguments passed to QtCore.QObject constructor
+        :param kwargs: Optional keyword arguments passed to QtCore.QObject constructor
+        :type model: SourceModel
+        """
+        super(SourceController, self).__init__(*args, **kwargs)
+        if not isinstance(model, SourceModel):
+            raise TypeError(
+                f'Cannot create {self.__class__.__name__} for {model!r}. Invalid type {type(model)}. Accepted type is `SourceModel`')
+        self._model = model
+
+    @pyqtSlot(int, name='setSilent')
+    @pyqtSlot(bool, name='setSilent')
+    @pyqtSlot(float, name='setSilent')
+    def setSilent(self, value):
+        """
+        Disable signals from the model
+        :param value: whether to disable or enable signals
+        :param value: Union[int, float, bool]
+        :return:
+        """
+        self._model.silent = value
+
+    @pyqtSlot(float, name='setZ')
+    def setZ(self, value):
+        """
+        Set the z-position of the model
+        :param value: z-value
+        :type value: float
+        """
+        self._model.z = value
+
+    @pyqtSlot(float, name='setOffset')
+    def setOffset(self, value):
+        """
+        Set the offset-value of the model
+        :param value: offset-value
+        :type value: float
+        :return:
+        """
+        self._model.offset = value
+
+    @pyqtSlot(float, name='setAngleMin')
+    def setAngleMin(self, value):
+        """
+        Set the minimum angle of the source model
+        :param value: minimum angle
+        :type value: float
+        :return:
+        """
+        self._model.angles = np.linspace(value, np.max(self._model.angles), num=len(self._model.angles))
+
+    @pyqtSlot(float, name='setAngleMax')
+    def setAngleMax(self, value):
+        """
+        Set the maximum angle of the source model
+        :param value: maximum angle
+        :type value: float
+        :return:
+        """
+        self._model.angles = np.linspace(np.min(self._model.angles), value, num=len(self._model.angles))
+
+    @pyqtSlot(int, name='setAngleNumber')
+    def setAngleNumber(self, value):
+        """
+        Set the number of angles of the source model
+        :param value: the number of angles
+        :type value: int
+        :return:
+        """
+        self._model.angles = np.linspace(np.min(self._model.angles), np.max(self._model.angles), num=value)
+
+    @pyqtSlot(list, name='setAngles')
+    @pyqtSlot(tuple, name='setAngles')
+    @pyqtSlot(np.ndarray, name='setAngles')
+    def setAngles(self, value):
+        """
+        Set the angles of the model
+        :param value: the angles
+        :type value: Union[list, tuple, np.ndarray]
+        :return:
+        """
+        self._model.angles = np.array(value)
+
+    @pyqtSlot(float, name='addAngle')
+    def addAngle(self, value):
+        """
+        Add an angle to the source
+        :param value: The angle to add
+        :type value: float
+        :return:
+        """
+        self._model.angles = np.array(list(self._model.angles) + [value])
+
+    @pyqtSlot(float, name='setSize')
+    def setSize(self, value):
+        """
+        Set the size-value of the model
+        :param value: size-value
+        :type value: float
+        :return:
+        """
+        self._model.size = value
+
+    @pyqtSlot(int, name='setPoints')
+    def setPoints(self, value):
+        """
+        Set the number of points to emit rays from
+        :param value: The number of points
+        :type value: int
+        :return:
+        """
+        self._model.points = value
+
+    @pyqtSlot(str, float)
+    def setParameter(self, parameter, value):
+        """
+        Sets a given parameter to a given value
+        :param parameter: The parameter to set. Should be either "z", "offset", "size", or "angle"
+        :param value: The value to set
+        :type parameter: str
+        :type value: float
+        :return:
+        """
+        if parameter.lower() == 'z':
+            self.setZ(value)
+        elif parameter.lower() == 'offset':
+            self.setOffset(value)
+        elif parameter.lower() == 'size':
+            self.setSize(value)
+        elif parameter.lower() == 'angle':
+            self.addAngle(value)
+        else:
+            raise ValueError(f'Could not set parameter {parameter} to {value} for {self!r}: Parameter not recognized.')
+
+
+class SourceView(QtWidgets.QWidget):
+    """
+    Create a view for a SourceModel.
+
+    This object provides a series of widgets and setup-tools for the widgets. The widgets are connected to a controller that controls the model, and changes in the model are reflected in the view - as long as the underlying data object (i.e. the Source) is changed directly (not through the corresponding SourceModel)
+    """
+    size_min = -999
+    size_max = 999
+    size_step = 0.01
+    value_decimals = 2
+
+    size_points_min = 1
+    size_points_max = 50
+    size_points_step = 1
+
+    z_min = -999
+    z_max = 999
+    z_step = 0.5
+    z_decimals = 2
+
+    offset_min = -999
+    offset_max = 999
+    offset_step = 0.05
+    offset_decimals = 2
+
+    angles_min = -90
+    angles_max = 90
+    angles_step = 0.01
+    angles_decimals = 2
+
+    angles_points_min = 1
+    angles_points_max = 50
+    angles_points_step = 1
+
+    @property
+    def model(self):
+        return self._model
+
+    def __init__(self, controller, *args, **kwargs):
+        """
+        Create a view for a controller.
+
+        The following widgets will be created:
+        -zSpinbox: A QDoubleSpinBox to control/show the z-position of the source
+        -offsetSpinbox: A QDoubleSpinBox to control/show the offset of the source
+        -sizeSpinBox: A QDoubleSpinBox to control/show the size of the source
+        -pointsSpinBox: A QSpinBox to control/show the number of points to emit rays from the source for
+        -anglesMinSpinBox: A QDoubleSpinBox to control/show the minimum angle to emit
+        -anglesMaxSpinBox: A QDoubleSpinBox to control/show the maximum angle to emit
+        -anglesNumberSpinBox: A QSpinBox to control/show the number of angles to emit from each point.
+
+        :param controller: The controller to connect to. The model will be extracted from this controller.
+        :param args: Optional positional arguments passed to QtWidgets.QWidget
+        :param kwargs: Optional keyword arguments passed to QtWidgets.QWidget
+        :type controller: SourceController
+        """
+        super(SourceView, self).__init__(*args, **kwargs)
+        if not isinstance(controller, SourceController):
+            raise TypeError()
+        self._controller = controller
+        self._model = self._controller.model
+
+        self.zSpinbox = QtWidgets.QDoubleSpinBox(self)
+        self.offsetSpinbox = QtWidgets.QDoubleSpinBox(self)
+        self.sizeSpinbox = QtWidgets.QDoubleSpinBox(self)
+        self.pointsSpinBox = QtWidgets.QSpinBox(self)
+        self.anglesMinSpinBox = QtWidgets.QDoubleSpinBox(self)
+        self.anglesMaxSpinBox = QtWidgets.QDoubleSpinBox(self)
+        self.anglesNumberSpinBox = QtWidgets.QSpinBox(self)
+
+        self.setupZSpinbox()
+        self.setupOffsetSpinbox()
+        self.setupSizeSpinbox()
+        self.setupAnglesSpinBox()
+
+        # Listeners
+        self._model.zChanged[float].connect(self.on_z_changed)
+        self._model.offsetChanged[float].connect(self.on_offset_changed)
+        self._model.sizeChanged[float].connect(self.on_size_changed)
+        self._model.anglesChanged[np.ndarra].connect(self.on_angles_changed)
+        self._model.pointsChanged[int].connect(self.on_points_changed)
+
+        # Signals
+        self.zSpinbox.valueChanged[float].connect(self._controller.setZ)
+        self.offsetSpinbox.valueChanged[float].connect(self._controller.setOffset)
+        self.sizeSpinbox.valueChanged[float].connect(self._controller.setSize)
+        self.pointsSpinBox.valueChanged[int].connect(self._controller.setPoints)
+        self.anglesMinSpinBox.valueChanged[float].connect(self._controller.setAngleMin)
+        self.anglesMaxSpinBox.valueChanged[float].connect(self._controller.setAngleMax)
+        self.anglesNumberSpinBox.valueChanged[int].connect(self._controller.setAngleNumber)
+
+    def setupZSpinbox(self):
+        self.zSpinbox.setMinimum(self.z_min)
+        self.zSpinbox.setMaximum(self.z_max)
+        self.zSpinbox.setDecimals(self.z_decimals)
+        self.zSpinbox.setSingleStep(self.z_step)
+        self.zSpinbox.blockSignals(True)
+        self.zSpinbox.setValue(self._model.z)
+        self.zSpinbox.blockSignals(False)
+
+    def setupOffsetSpinbox(self):
+        self.offsetSpinbox.setMinimum(self.offset_min)
+        self.offsetSpinbox.setMaximum(self.offset_max)
+        self.offsetSpinbox.setDecimals(self.offset_decimals)
+        self.offsetSpinbox.setSingleStep(self.offset_step)
+        self.offsetSpinbox.blockSignals(True)
+        self.offsetSpinbox.setValue(self._model.offset)
+        self.offsetSpinbox.blockSignals(False)
+
+    def setupSizeSpinbox(self):
+        self.sizeSpinbox.setMinimum(self.size_min)
+        self.sizeSpinbox.setMaximum(self.size_max)
+        self.sizeSpinbox.setDecimals(self.size_decimals)
+        self.sizeSpinbox.setSingleStep(self.size_step)
+        self.sizeSpinbox.blockSignals(True)
+        self.sizeSpinbox.setValue(self._model.size)
+        self.sizeSpinbox.blockSignals(False)
+
+        self.pointsSpinbox.setMinimum(self.size_points_min)
+        self.pointsSpinbox.setMaximum(self.size_points_max)
+        self.pointsSpinbox.setSingleStep(self.size_points_step)
+        self.pointsSpinbox.blockSignals(True)
+        self.pointsSpinbox.setValue(self._model.points)
+        self.pointsSpinbox.blockSignals(False)
+
+    def setupAnglesSpinbox(self):
+        self.anglesMinSpinbox.setMinimum(self.anglesMin_min)
+        self.anglesMinSpinbox.setMaximum(self.anglesMin_max)
+        self.anglesMinSpinbox.setDecimals(self.anglesMin_decimals)
+        self.anglesMinSpinbox.setSingleStep(self.anglesMin_step)
+        self.anglesMinSpinbox.blockSignals(True)
+        self.anglesMinSpinbox.setValue(self._model.anglesMin)
+        self.anglesMinSpinbox.blockSignals(False)
+
+        self.anglesMaxSpinbox.setMinimum(self.anglesMax_min)
+        self.anglesMaxSpinbox.setMaximum(self.anglesMax_max)
+        self.anglesMaxSpinbox.setDecimals(self.anglesMax_decimals)
+        self.anglesMaxSpinbox.setSingleStep(self.anglesMax_step)
+        self.anglesMaxSpinbox.blockSignals(True)
+        self.anglesMaxSpinbox.setValue(self._model.anglesMax)
+        self.anglesMaxSpinbox.blockSignals(False)
+
+        self.anglesNumberSpinbox.setMinimum(self.angles_points_min)
+        self.anglesNumberSpinbox.setMaximum(self.angles_points_max)
+        self.anglesNumberSpinbox.setSingleStep(self.angles_points_step)
+        self.anglesNumberSpinbox.blockSignals(True)
+        self.anglesNumberSpinbox.setValue(len(self._model.angles))
+        self.anglesNumberSpinbox.blockSignals(False)
+
+    @pyqtSlot(float)
+    def on_z_changed(self, value):
+        if self.zSpinbox.minimum() > value:
+            self.zSpinbox.setMinimum(value)
+        if self.zSpinbox.maximum() < value:
+            self.zSpinbox.setMaximum(value)
+
+        self.zSpinbox.blockSignals(True)
+        self.zSpinbox.setValue(value)
+        self.zSpinbox.blockSignals(False)
+
+    @pyqtSlot(float)
+    def on_offset_changed(self, value):
+        if self.offsetSpinbox.minimum() > value:
+            self.offsetSpinbox.setMinimum(value)
+        if self.offsetSpinbox.maximum() < value:
+            self.offsetSpinbox.setMaximum(value)
+
+        self.offsetSpinbox.blockSignals(True)
+        self.offsetSpinbox.setValue(value)
+        self.offsetSpinbox.blockSignals(False)
+
+    @pyqtSlot(float)
+    def on_size_changed(self, value):
+        if self.sizeSpinbox.minimum() > value:
+            self.sizeSpinbox.setMinimum(value)
+        if self.sizeSpinbox.maximum() < value:
+            self.sizeSpinbox.setMaximum(value)
+
+        self.sizeSpinbox.blockSignals(True)
+        self.sizeSpinbox.setValue(value)
+        self.sizeSpinbox.blockSignals(False)
+
+    @pyqtSlot(float)
+    def on_points_changed(self, value):
+        if self.pointsSpinbox.minimum() > value:
+            self.pointsSpinbox.setMinimum(value)
+        if self.pointsSpinbox.maximum() < value:
+            self.pointsSpinbox.setMaximum(value)
+
+        self.pointsSpinbox.blockSignals(True)
+        self.pointsSpinbox.setValue(value)
+        self.pointsSpinbox.blockSignals(False)
+
+    @pyqtSlot(np.ndarray)
+    def on_angles_changed(self, value):
+        minimum = np.min(value)
+        maximum = np.maximum(value)
+        n = len(value)
+
+        if self.anglesMinSpinBox.minimum() > minimum:
+            self.anglesMinSpinbox.setMinimum(minimum)
+        if self.anglesMinSpinbox.maximum() < minimum:
+            self.anglesMinSpinbox.setMaximum(minimum)
+
+        if self.anglesMaxSpinBox.maximum() > maximum:
+            self.anglesMaxSpinbox.setMinimum(maximum)
+        if self.anglesMaxSpinbox.maximum() < maximum:
+            self.anglesMaxSpinbox.setMaximum(maximum)
+
+        if self.anglesNumberSpinBox.minimum() > n:
+            self.anglesNumberSpinbox.setMinimum(n)
+        if self.anglesNumberSpinbox.maximum() < n:
+            self.anglesNumberSpinbox.setMaximum(n)
+
+        self.anglesMinSpinbox.blockSignals(True)
+        self.anglesMaxSpinbox.blockSignals(True)
+        self.anglesNumberSpinbox.blockSignals(True)
+        self.anglesMinSpinBox.setValue(minimum)
+        self.anglesMinSpinBox.setValue(maximum)
+        self.anglesNumberSpinBox.setValue(n)
+        self.anglesMinSpinbox.blockSignals(False)
+        self.anglesMaxSpinbox.blockSignals(False)
+        self.anglesNumberSpinbox.blockSignals(False)
+
+
+class ScreenModel(QtCore.QObject):
+    """
+        Model for controlling a Screen
+
+        The model should ensure that proper signals are sent whenever the data of the Screen has been changed.
+
+        The model emits the following signals:
+        :param zChanged: Signal ([], [float]) emitted whenever the z-value of the Screen has changed.
+        :param ScreenChanged: Signal emitted whenever any change has been made to the Screen, inculding the above.
+        """
+    zChanged = pyqtSignal([], [float], name='zChanged')
+    screenChanged = pyqtSignal(name='operatorChanged')
+
+    @property
+    def z(self):
+        return self._screen.z
+
+    @z.setter
+    def z(self, value):
+        if isinstance(value, float):
+            self.screen.z = value
+            self.zChanged.emit()
+            self.zChanged[float].emit(value)
+            self.screenChanged.emit()
+        else:
+            raise ScreenModelError(
+                f'Cannot set Z-value of {self.__class__.__name__} of {self._screen!r}.') from TypeError(
+                f'Value {value!r} must be `float`')
+
+    @property
+    def silent(self):
+        return self._silent
+
+    @silent.setter
+    def silent(self, value):
+        self._silent = bool(value)
+        self.blockSignals(self._silent)
+
+    def __init__(self, screen, *args, **kwargs):
+        """
+        Create a model for a Screen
+
+        :param screen: The Screen to model
+        :param args: Optional positional arguments passed to QtCore.QObject constructor
+        :param kwargs: Optional keyword arguments passed to QtCore.QObject constructor
+        :type screen: Screen
+        """
+        super(ScreenModel, self).__init__(*args, **kwargs)
+
+        if not isinstance(screen, Screen):
+            raise TypeError(
+                f'Cannot create {self.__class__.__name__} for {screen!r}. Invalid type {type(screen)}. Accepted type is Screen.')
+        self._screen = screen
+        self._silent = False
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self._screen!r}, {self.parent()})'
+
+    def __str__(self):
+        return f'{self._screen}'
+
+
+class ScreenController(QtCore.QObject):
+    """
+    Controller for controlling a ScreenModel
+    """
+
+    @property
+    def model(self):
+        return self._model
+
+    def __init__(self, model, *args, **kwargs):
+        """
+        Create a controller for a ScreenModel
+
+        :param model: The model to control
+        :param args: Optional positional arguments passed to QtCore.QObject constructor
+        :param kwargs: Optional keyword arguments passed to QtCore.QObject constructor
+        :type model: ScreenModel
+        """
+        super(ScreenController, self).__init__(*args, **kwargs)
+        if not isinstance(model, ScreenModel):
+            raise TypeError(
+                f'Cannot create {self.__class__.__name__} for {model!r}. Invalid type {type(model)}. Accepted type is `ScreenModel`')
+        self._model = model
+
+    @pyqtSlot(int, name='setSilent')
+    @pyqtSlot(bool, name='setSilent')
+    @pyqtSlot(float, name='setSilent')
+    def setSilent(self, value):
+        """
+        Disable signals from the model
+        :param value: whether to disable or enable signals
+        :param value: Union[int, float, bool]
+        :return:
+        """
+        self._model.silent = value
+
+    @pyqtSlot(float, name='setZ')
+    def setZ(self, value):
+        """
+        Set the z-position of the model
+        :param value: z-value
+        :type value: float
+        """
+        self._model.z = value
+
+    @pyqtSlot(str, float)
+    def setParameter(self, parameter, value):
+        """
+        Sets a given parameter to a given value
+        :param parameter: The parameter to set. Should be "z"
+        :param value: The value to set
+        :type parameter: str
+        :type value: float
+        :return:
+        """
+        if parameter.lower() == 'z':
+            self.setZ(value)
+        else:
+            raise ValueError(f'Could not set parameter {parameter} to {value} for {self!r}: Parameter not recognized.')
+
+
+#WIP: Make ScreenView
+
+
 class MicroscopeModel(QtCore.QObject):
     modelChanged = pyqtSignal([], name='modelChanged')
     systemFilled = pyqtSignal([], name='systemFilled')
@@ -790,8 +1436,8 @@ class MicroscopeModel(QtCore.QObject):
 
         self._optical_system = optical_system
 
-        self._sourceModel = None
-        self._screenModel = None
+        self._sourceModel = SourceModel(optical_system.source)
+        self._screenModel = ScreenModel(optical_system.screen)
         self._operatorModels = [OpticalOperatorModel(operator, self.parent()) for operator in self._optical_system]
 
     def __iter__(self):
@@ -905,8 +1551,8 @@ class MicroscopeView(QtWidgets.QMainWindow):
         self.print_system_button = QtWidgets.QPushButton('Print system')
         self.print_traces_button = QtWidgets.QPushButton('Print rays')
 
-        # self._screenView = None
-        # self._sourceView = None
+        self._screenView = None
+        self._sourceView = None
         self._operatorViews = [OpticalOperatorView(controller, self, plot_widget=self.plot_widget) for controller in
                                self._controller.operatorControllers]
         self._trace_lines = None
@@ -920,8 +1566,8 @@ class MicroscopeView(QtWidgets.QMainWindow):
         self.centralWidget().layout().addWidget(self.print_system_button, 2, 0)
         self.centralWidget().layout().addWidget(self.print_traces_button, 3, 0)
 
-        self.lensStyleWindow = QtWidgets.QMainWindow(self)
-        self.lensStyleWindow.setCentralWidget(QtWidgets.QWidget(self))
+        self.lensStyleWindow = QtWidgets.QMainWindow()
+        self.lensStyleWindow.setCentralWidget(QtWidgets.QWidget())
         self.lensStyleWindow.centralWidget().setLayout(QtWidgets.QGridLayout())
         self.lensStyleWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Name'), 0, 0)
         self.lensStyleWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Style'), 0, 1)
@@ -956,6 +1602,40 @@ class MicroscopeView(QtWidgets.QMainWindow):
         self.styleMenu.addAction(self.rayStyleAction)
 
         self.lensStyleAction.triggered.connect(self.openLensStyle)
+
+        # Source control
+        self.sourceControlWindow = QtWidgets.QMainWindow()
+        self.sourceControlWindow.setCentralWidget(QtWidgets.QWidget())
+        self.sourceControlWindow.centralWidget().setLayout(QtWidgets.QGridLayout())
+        self.sourceAngleMinimumSpinBox = QtWidgets.QDoubleSpinBox()
+        self.sourceAngleMinimumSpinBox.setMinimum(-90)
+        self.sourceAngleMinimumSpinBox.setMaximum(0)
+        self.sourceAngleMinimumSpinBox.setDecimals(2)
+        self.sourceAngleMinimumSpinBox.setSingleStep(0.01)
+        self.sourceAngleMinimumSpinBox.setValue(-0.10)
+        self.sourceAngleMaximumSpinBox = QtWidgets.QDoubleSpinBox()
+        self.sourceAngleMaximumSpinBox.setMinimum(0)
+        self.sourceAngleMaximumSpinBox.setMaximum(90)
+        self.sourceAngleMaximumSpinBox.setDecimals(2)
+        self.sourceAngleMaximumSpinBox.setSingleStep(0.01)
+        self.sourceAngleMaximumSpinBox.setValue(0.10)
+        self.sourceAngles = QtWidgets.QSpinBox()
+        self.sourceAngles.setMinimum(1)
+        self.sourceAngles.setMaximum(500)
+        self.sourceAngles.setSingleStep(1)
+        self.sourceAngles.setValue(3)
+
+        self.sourceControlWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('Angular range from'))
+        self.sourceControlWindow.centralWidget().layout().addWidget(self.sourceAngleMinimumSpinBox)
+        self.sourceControlWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('to'))
+        self.sourceControlWindow.centralWidget().layout().addWidget(self.sourceAngleMaximumSpinBox)
+        self.sourceControlWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('in'))
+        self.sourceControlWindow.centralWidget().layout().addWidget(self.sourceAngles)
+        self.sourceControlWindow.centralWidget().layout().addWidget(QtWidgets.QLabel('steps'))
+        self.sourceAction.triggered.connect(self.openSourceControl)
+
+        self.operatorAction.triggered.connect(self.openOperatorControl)
+        self.screenAction.triggered.connect(self.openScreenControl)
 
         # Signals
         self.plot_button.clicked.connect(self.on_model_changed)
@@ -1036,6 +1716,19 @@ class MicroscopeView(QtWidgets.QMainWindow):
     def openLensStyle(self):
         self.lensStyleWindow.show()
 
+    @pyqtSlot()
+    def openSourceControl(self):
+        self.sourceControlWindow.show()
+
+    @pyqtSlot()
+    def openScreenControl(self):
+        self.screenView.show()
+
+    @pyqtSlot()
+    def openOperatorControl(self):
+        pass
+        # self.operatorViews.show()
+
 
 def full_column(angles=(-1, 0, 1), size=0, n_points=1):
     mygui = QtWidgets.QApplication(sys.argv)
@@ -1092,12 +1785,17 @@ def condenser_system(angles=(-1, 0, 1), size=0, n_points=1):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--system', type=str, default='full', choices=['full', 'condenser','imaging'], help='The system to show, i.e. the condenser, imaging, or full system.')
-    parser.add_argument('--min_angle', dest='min_angle', type=float, default=-1, help='The minimum angle to emit from the source')
-    parser.add_argument('--max_angle', dest='max_angle', type=float, default=1, help='The maximum angle to emit from the source')
-    parser.add_argument('--n_angles', dest='n_angles', type=int, default=3, help='The number of angles to emit from the source')
+    parser.add_argument('--system', type=str, default='full', choices=['full', 'condenser', 'imaging'],
+                        help='The system to show, i.e. the condenser, imaging, or full system.')
+    parser.add_argument('--min_angle', dest='min_angle', type=float, default=-1,
+                        help='The minimum angle to emit from the source')
+    parser.add_argument('--max_angle', dest='max_angle', type=float, default=1,
+                        help='The maximum angle to emit from the source')
+    parser.add_argument('--n_angles', dest='n_angles', type=int, default=3,
+                        help='The number of angles to emit from the source')
     parser.add_argument('--source_size', dest='source_size', type=float, default=0.0, help='The size of the source')
-    parser.add_argument('--source_points', dest='source_points', type=int, default=1, help='The number of points to emit beams from the source')
+    parser.add_argument('--source_points', dest='source_points', type=int, default=1,
+                        help='The number of points to emit beams from the source')
 
     arguments = parser.parse_args()
 
